@@ -13,7 +13,34 @@ connection.connect (function (err){
  console.log("connected as id: " + connection.threadId);
  //createProduct();
  afterConnection();
-});
+
+})
+
+var start = function () { 
+    inquirer.prompt (
+      [{
+        name:"productID",
+        type:"input",
+        message:"Enter the ID of the product that you would like to buy"
+      },
+      {
+        name:"order",
+        type:"input",
+        message:"how many units of the product you would like to buy ?"
+      }])
+      .then (function (answer){
+        console.log(answer)
+        if(answer.order=="we have it on stock"){
+          console.log('we do have it !')
+            //fullfil();           
+        }else {
+          console.log("we do NOT have it")
+            //reorder();
+        }
+    }) 
+ }
+
+
 
 function createProduct() {
   console.log("Inserting a new product...\n");
@@ -28,7 +55,7 @@ function createProduct() {
     function(err, res) {
       console.log(res.affectedRows + " product inserted!\n");
       //Call updateProduct AFTER the INSERT completes
-     updateProduct();
+     //updateProduct();
     }
   );
 
@@ -50,7 +77,7 @@ function updateProduct() {
       function(err, res) {
         console.log(res.affectedRows + " products updated!\n");
         // Call deleteProduct AFTER the UPDATE completes
-        deleteProduct();
+       // deleteProduct();
       }
     );
   
@@ -77,6 +104,7 @@ function afterConnection() {
   connection.query("SELECT * FROM products", function(err, res) {
     if (err) throw err;
     console.log(res);
+    start();
     connection.end();
   });
 }
