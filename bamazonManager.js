@@ -45,66 +45,104 @@ function manager() {
             addNewProduct();
             break;
         }
-      });
-  }
+    });
+}
 
 function productsForSale() {
     connection.query("SELECT * FROM products", function(err, res) {
       if (err) throw err;
       console.log(res);
-     // connection.end();
       manager();
     });
   }
 
+  function lowInventory() {
+    connection.query("SELECT product, stock FROM products WHERE stock <=5", function(err, res) {     
+        if (err) throw err;
+        console.log(res);
+        manager();
+      });    
+}
+
+function addToInventory() {
+    inquirer
+    .prompt([
+        {
+        name: "product",
+        type: "input",
+        message: "Enter Product: "
+        },
+        {
+        name: "quantity",
+        type: "input",
+        message: "Enter quantity: "
+        }
+    ])
+    .then(function(answer) {
+        console.log("Updated a new quantity...\n");
+        var query = connection.query(
+            "UPDATE products SET ? WHERE ?",
+            [
+                {
+                stock: answer.quantity,
+                },
+                {
+                product: answer.product,
+                }
+            ],
+            function(err, res) {
+                console.log(err)
+                console.log(res)
+            console.log(res.affectedRows + " product updated!\n");
+            manager();
+            }
+        );
+    })   
+}
 
 function addNewProduct() {
     inquirer
     .prompt([
-    {
-    name: "product",
-    type: "input",
-    message: "Enter Product: "
-    },
-    {
-    name: "department",
-    type: "input",
-    message: "Enter Department: "
-    },
-    {
-    name: "price",
-    type: "input",
-    message: "Enter Price: "
-    },
-    {
-    name: "quantity",
-    type: "input",
-    message: "Enter quantity: "
-    }
+        {
+        name: "product",
+        type: "input",
+        message: "Enter Product: "
+        },
+        {
+        name: "department",
+        type: "input",
+        message: "Enter Department: "
+        },
+        {
+        name: "price",
+        type: "input",
+        message: "Enter Price: "
+        },
+        {
+        name: "quantity",
+        type: "input",
+        message: "Enter quantity: "
+        }
     ])
     .then(function(answer) {
-    
-    console.log("Inserting a new product...\n");
-    var query = connection.query(
-        "INSERT INTO products SET ?",
-        {
-        product: answer.product,
-        department: answer.department,
-        price: answer.price,
-        stock: answer.quantity
-        },
-        function(err, res) {
-            console.log(err)
-            console.log(res)
-        console.log(res.affectedRows + " product inserted!\n");
-        //Call updateProduct AFTER the INSERT completes
-        //updateProduct();
-        }
+        console.log("Inserting a new product...\n");
+        var query = connection.query(
+            "INSERT INTO products SET ?",
+            {
+            product: answer.product,
+            department: answer.department,
+            price: answer.price,
+            stock: answer.quantity
+            },
+            function(err, res) {
+                console.log(err)
+                console.log(res)
+            console.log(res.affectedRows + " product inserted!\n");
+             // connection.end();
+            manager();
+            }
         );
-    })
-      // logs the actual query being run
-      console.log(query.sql);
-      manager();
+    })   
 }
   
 
