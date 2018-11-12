@@ -16,6 +16,15 @@ connection.connect (function (err){
 
 })
 
+function afterConnection() {
+  connection.query("SELECT * FROM products", function(err, res) {
+    if (err) throw err;
+    console.log(res);
+    start();
+    //connection.end();
+  });
+}
+
 var start = function () { 
     inquirer.prompt (
       [{
@@ -28,64 +37,25 @@ var start = function () {
         type:"input",
         message:"how many units of the product you would like to buy ?"
       }])
-      .then (function (answer){
-        console.log(answer)
-        if(answer.order=="we have it on stock"){
-          console.log('we do have it !')
-            //fullfil();           
-        }else {
-          console.log("we do NOT have it")
-            //reorder();
+      .then (function(answer){
+        console.log(answer);
+        connection.query("SELECT stock FROM products WHERE item_id=" + answer.productID , function (err, res){
+          console.log("Got stock and look below: " + res[0].stock + " and ordered " + answer.order);
+          console.log(res)
+          if (err) throw err;
+          console.log("we have " + res);
+          //fullfil();`
         }
-    }) 
+      )}
+    )
+  }
+  
+    
+function fullfil(){
+   //if (quantity_ID is under the quantity of the ID dispach the order)
  }
 
-
-
-function createProduct() {
-  console.log("Inserting a new product...\n");
-  var query = connection.query(
-    "INSERT INTO products SET ?",
-    {
-      product: "bedroom set",
-      department: "furniture",
-      price: 5500.00,
-      stock: 5
-    },
-    function(err, res) {
-      console.log(res.affectedRows + " product inserted!\n");
-      //Call updateProduct AFTER the INSERT completes
-     //updateProduct();
-    }
-  );
-
-  // logs the actual query being run
-  console.log(query.sql);
-}
-function updateProduct() {
-  
-    var query = connection.query(
-      "UPDATE products SET ? WHERE ?",
-      [
-        {
-          department: "school supplies"
-        },
-        {
-          product: "calculators",
-        }
-      ],
-      function(err, res) {
-        console.log(res.affectedRows + " products updated!\n");
-        // Call deleteProduct AFTER the UPDATE completes
-       // deleteProduct();
-      }
-    );
-  
-    // logs the actual query being run
-    console.log(query.sql);
-  }
-
-  function deleteProduct() {
+function deleteProduct() {
 
     connection.query(
       "DELETE FROM products WHERE ?",
@@ -100,11 +70,4 @@ function updateProduct() {
     );
   }
 
-function afterConnection() {
-  connection.query("SELECT * FROM products", function(err, res) {
-    if (err) throw err;
-    console.log(res);
-    start();
-    connection.end();
-  });
-}
+
