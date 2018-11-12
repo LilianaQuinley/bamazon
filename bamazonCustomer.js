@@ -37,23 +37,43 @@ var start = function () {
         type:"input",
         message:"how many units of the product you would like to buy ?"
       }])
-      .then (function(answer){
-        console.log(answer);
-        connection.query("SELECT stock FROM products WHERE item_id=" + answer.productID , function (err, res){
-          console.log("Got stock and look below: " + res[0].stock + " and ordered " + answer.order);
-          console.log(res)
-          if (err) throw err;
-          console.log("we have " + res);
-          //fullfil();`
-        }
-      )}
-    )
+      .then (function (answer){
+        connection.query("SELECT stock, product FROM products WHERE  item_id=" + answer.productID , function (err,res){
+          console.log(answer);
+          console.log(res[0]);  
+         if (err) throw err;
+         if (answer.order <= res[0].stock) {
+          console.log("Congratulations your " + answer.order + " " + res[0].product + " are on your way")
+          var remaning = res[0].stock - answer.order
+          console.log("Our remaining is " + remaning);
+          fullfil(answer, remaning);
+         } else {
+           console.log("Insufficient quantity of " +res[0].product + " in stock");
+         }
+         connection.end();
+        })
+      })
   }
-  
-    
-function fullfil(){
-   //if (quantity_ID is under the quantity of the ID dispach the order)
- }
+     
+  function fullfil(answer,remaining) {
+    console.log("Going to fulfil with " + answer.productID + " and " + remaining);
+    connection.query("UPDATE products SET ? WHERE ?",
+        [
+            {
+            stock: remaining 
+            },
+            {
+            item_id: answer.productID,
+            }
+        ],
+        function(err, res) {
+            console.log(err)
+            console.log(res)
+        console.log(res.affectedRows + " product updated!\n");
+        start();
+        }
+    );  
+}
 
 function deleteProduct() {
 

@@ -80,11 +80,12 @@ function addToInventory() {
     ])
     .then(function(answer) {
         console.log("Updated a new quantity...\n");
-        var query = connection.query(
+        connection.query(
             "UPDATE products SET ? WHERE ?",
             [
                 {
                 stock: answer.quantity,
+
                 },
                 {
                 product: answer.product,
