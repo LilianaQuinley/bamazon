@@ -64,9 +64,8 @@ function productsForSale() {
       });    
 }
 
-function addToInventory() {
-    inquirer
-    .prompt([
+function addToInventory() {   
+    inquirer.prompt([
         {
         name: "product",
         type: "input",
@@ -77,28 +76,35 @@ function addToInventory() {
         type: "input",
         message: "Enter quantity: "
         }
-    ])
+    ])  
     .then(function(answer) {
-        console.log("Updated a new quantity...\n");
-        connection.query(
-            "UPDATE products SET ? WHERE ?",
-            [
-                {
-                stock: answer.quantity,
-
-                },
-                {
-                product: answer.product,
+        console.log(answer);
+        connection.query("SELECT product, stock FROM products WHERE product='" + answer.product + "'", function(err, res) {     
+            if (err) throw err;       
+            console.log(res);
+            console.log(' ');
+            var addMore = parseInt(res[0].stock) + parseInt(answer.quantity);
+            console.log("the new quantity is " + addMore + +" " + "\n");
+            
+            console.log("Updated a new quantity...\n");    
+            connection.query("UPDATE products SET ? WHERE ?",
+                [
+                    {
+                    stock: addMore
+                    },
+                    {
+                    product: answer.product,
+                    }
+                ],
+                function(err, res) {
+                    console.log(err)
+                    console.log(res)
+                console.log(res.affectedRows + " product updated!\n");
+                manager();
                 }
-            ],
-            function(err, res) {
-                console.log(err)
-                console.log(res)
-            console.log(res.affectedRows + " product updated!\n");
-            manager();
-            }
-        );
-    })   
+            );
+        })   
+    })
 }
 
 function addNewProduct() {
