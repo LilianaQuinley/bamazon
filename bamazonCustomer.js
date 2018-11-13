@@ -11,7 +11,6 @@ var connection =  mysql.createConnection ({
 
 connection.connect (function (err){
  console.log("connected as id: " + connection.threadId);
- //createProduct();
  afterConnection();
 
 })
@@ -20,8 +19,9 @@ function afterConnection() {
   connection.query("SELECT * FROM products", function(err, res) {
     if (err) throw err;
     console.log(res);
+    console.log(" ");
     start();
-    //connection.end();
+
   });
 }
 
@@ -35,28 +35,36 @@ var start = function () {
       {
         name:"order",
         type:"input",
-        message:"how many units of the product you would like to buy ?"
+        
+        message:"how many units  you would like to buy ?"
       }])
       .then (function (answer){
-        connection.query("SELECT stock, product FROM products WHERE  item_id=" + answer.productID , function (err,res){
-          console.log(answer);
-          console.log(res[0]);  
+        connection.query("SELECT stock, product, price FROM products WHERE  item_id=" + answer.productID , function (err,res){
+          
+            console.log(" ");
+            console.log(answer);
+            console.log(res[0]);  
+            console.log(" ");
          if (err) throw err;
          if (answer.order <= res[0].stock) {
-          console.log("Congratulations your " + answer.order + " " + res[0].product + " are on your way")
+           var total = answer.order * res[0].price;
+            console.log("Congratulations your " + answer.order + " " + res[0].product + " are on your way")
+            console.log("Please pay $" + total +" " +"US dollars")
+            console.log(" ");
           var remaning = res[0].stock - answer.order
-          console.log("Our remaining is " + remaning);
+            console.log("Our remaining is " + remaning);
+            console.log(" ");
           fullfil(answer, remaning);
          } else {
-           console.log("Insufficient quantity of " +res[0].product + " in stock");
-         }
+            console.log("Insufficient quantity of " +res[0].product + " in stock");
+            
+         } 
          connection.end();
         })
       })
   }
      
   function fullfil(answer,remaining) {
-    console.log("Going to fulfil with " + answer.productID + " and " + remaining);
     connection.query("UPDATE products SET ? WHERE ?",
         [
             {
@@ -67,27 +75,16 @@ var start = function () {
             }
         ],
         function(err, res) {
-            console.log(err)
-            console.log(res)
-        console.log(res.affectedRows + " product updated!\n");
-        start();
+            console.log(err);
+            console.log(res);
+            console.log(" ");
+        console.log(res.affectedRows + " product updated!\n");  
+       // afterConnection(); 
+        //connection.end();
         }
     );  
 }
 
-function deleteProduct() {
 
-    connection.query(
-      "DELETE FROM products WHERE ?",
-      {
-        product: "bedroom set"
-      },
-      function(err, res) {
-        console.log(res.affectedRows + " products deleted!\n");
-        // Call readProducts AFTER the DELETE completes
-        //readProducts();
-      }
-    );
-  }
 
 
