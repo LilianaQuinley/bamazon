@@ -1,7 +1,8 @@
 # bamazon
 
 # Project
-	Bamazon is a console store front where a user can buy product and a manager can restock and add new product 3 files were made to handle store from a customer, manager, and supervisor position
+	Bamazon is a console store front where a user can buy product and a manager can restock 
+	and add new product 3 files were made to handle store from a customer, manager, and supervisor position
 
 # Objectives
 
