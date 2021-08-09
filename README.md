@@ -6,7 +6,7 @@
 
 # Objectives
 
-	#bamazon.js
+## bamazon.js
 	
 		Create a MySQL database to handle the store
 
@@ -28,7 +28,7 @@
 		Update the inventory in the database to the order
 		
 
-	bamazonManager.js (bonus)
+## bamazonManager.js (bonus)
 
 		The file lets the user play a managerial role in the app restocking items and even ordring new items
 
@@ -41,7 +41,7 @@
 		Updates the MySQL database accordingly
 		
 
-	bamazonSupervisor.js (bonus)
+## bamazonSupervisor.js (bonus)
 
 		This file lets the user play a supervisor role in the app, making sure the store is making money
 
